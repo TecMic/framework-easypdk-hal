@@ -1,0 +1,11 @@
+{
+    "name": "framework-easypdk-hal",
+    "version": "0.0.1",
+    "description": "Easy PDK HAL Framework for Padauk Microcontrollers",
+    "keywords": [
+      "framework",
+      "pdk13",
+      "pdk14",
+      "pdk15"
+    ]
+  }
