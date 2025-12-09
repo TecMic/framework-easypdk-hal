@@ -27,7 +27,8 @@
  * ======== FUNCTIONS ========
  */
 
-void UTIL_Init_ASM(void) ASM_CORE
+// create assembler regions for HAL lib. Will always be compiled
+static void UTIL_Init_ASM(void) ASM_CORE
 {
 __asm
     // dummy IVECT region
@@ -37,6 +38,7 @@ __asm
     .area PIREG
 pI::
     .ds 2
+    .globl  pI
 
     // reserve 12 overlayable bytes in RAM
     .area   OSEG (OVR,DATA)
