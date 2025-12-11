@@ -3,6 +3,24 @@
 
 #include <pdk/device.h>
 
+typedef enum {
+    IT_EDGE_PA0_RISE_FALL   = INTEGS_PA0_BOTH,
+    IT_EDGE_PA0_RISING      = INTEGS_PA0_RISING,
+    IT_EDGE_PA0_FALLING     = INTEGS_PA0_FALLING,
+
+    IT_EDGE_PB0_RISE_FALL   = INTEGS_PB0_BOTH,
+    IT_EDGE_PB0_RISING      = INTEGS_PB0_RISING,
+    IT_EDGE_PB0_FALLING     = INTEGS_PB0_FALLING,
+
+    IT_EDGE_TIM16_RISING    = INTEGS_T16_RISING,
+    IT_EDGE_TIM16_FALLING   = INTEGS_T16_FALLING
+} IT_EdgeDetection_e;
+
+// Set trigger edge for Timer 16, PA0 and PB0 as defined in IT_EdgeDetection_e
+// INTEGS is write only. All trigger edges (IT_EdgeDetection_e) must be set at the same time.
+#define IT_Set_Trigger_Edge(edge)       INTEGS = edge
+
+
 #define IT_Get_Active_Interrupts()      (uint8_t)(INTEN & INTRQ)
 
 #define IT_TIM2_Enable_Interrupt()      INTEN |= (uint8_t)INTEN_TM2
