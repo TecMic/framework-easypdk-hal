@@ -16,7 +16,7 @@ build_flags =
 Possible defines to add to the build_flags in platformio.ini
 
 #### SYS_TIMER
-By default the sys-timer uses timer 16 with a interrupt every 1.02 ms.\
+By default the sys-timer uses Timer 16 with a interrupt every 1.02 ms.\
 Timer 2 can be used for interrupts every 1.00 ms.
 >Note: Timer 2 is used by other modules
 ```

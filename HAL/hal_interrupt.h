@@ -32,4 +32,18 @@
 #define IT_Enable_Interrupts()          __engint()
 #define IT_Disable_Interrupts()         __disgint()
 
+// Place interrupt function directly at interrupt entry address
+// For this, the code has to be pushed behind the interrupt function manually
+//   board_build.code_loc = 0x0080
+// ! Doesn't push p, so only use with asm !
+#define INTERRUPT_FUNCTION_ASM_START() __asm__( \
+    ".area	IVECT \n" \
+    "push af \n"            \
+    )
+#define INTERRUPT_FUNCTION_ASM_END() __asm__( \
+    "pop af \n" \
+    "reti \n" \
+    ".area CODE \n" \
+    )
+
 #endif //__HAL_INTERRUPT_H__

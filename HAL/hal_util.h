@@ -19,8 +19,6 @@
     #define ASM_CORE
     #define INTERRUPT_FUNCTION(a)       interrupt(a)
     #define INTERRUPT_FUNCTION_ASM(a)   INTERRUPT_FUNCTION(a)
-    #define INTERRUPT_FUNCTION_ASM_START()
-    #define INTERRUPT_FUNCTION_ASM_END()
 #else
     #define __SFRDEF(a,b)               __sfr __at b a;
     #define VOLATILE_AT(a)              volatile __at(a)
@@ -29,15 +27,6 @@
     #define ASM_CORE                    __naked
     #define INTERRUPT_FUNCTION(a)       interrupt(a) __interrupt(0)
     #define INTERRUPT_FUNCTION_ASM(a)   INTERRUPT_FUNCTION(a) ASM_CORE
-    #define INTERRUPT_FUNCTION_ASM_START() __asm__( \
-                            ".area	IVECT \n" \
-                            "push af \n"            \
-                            )
-    #define INTERRUPT_FUNCTION_ASM_END() __asm__( \
-                            "pop af \n" \
-                            "reti \n" \
-                            ".area CODE \n" \
-                            )
 #endif
 
 /***********************************************************
