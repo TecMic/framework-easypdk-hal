@@ -51,76 +51,76 @@ void SYS_TIME_Init(void)
 }
 
 /*
- * @brief   Set the time parameters to an ElapseTime element
+ * @brief   Set the start and timeout parameters to timeout struct
  *
- * @param1  ElapseTime element which stores the time parameters
+ * @param1  Timeout element which stores the timeout parameters
  * @return  -
  */
-void SYS_TIME_Set_Elapse_Time(ElapseTime_t *DelayElement, uint16_t delayTime) ASM_CORE
+void SYS_TIME_Set_Timeout(Timeout_t *TimeoutElement, uint16_t timeout) ASM_CORE
 {
-    DelayElement, delayTime;
+    TimeoutElement, timeout;
 
-#define _ptrDelayElement    _SYS_TIME_Set_Elapse_Time_PARM_1
-#define _delayTime          _SYS_TIME_Set_Elapse_Time_PARM_2
+#define _ptrTimeoutElement  _SYS_TIME_Set_Timeout_PARM_1
+#define _timeout            _SYS_TIME_Set_Timeout_PARM_2
 
 __asm
-    mov     a, _ptrDelayElement+0
+    mov     a, _ptrTimeoutElement+0
     mov     p, a
 
     disgint
     mov     a, _upTime+0
-    idxm    p, a            // lsb ElapseTime_t.startTime
+    idxm    p, a            // lsb TimeoutElement.startTime
     mov	    a, _upTime+1
     engint
 
     inc     p
-    idxm    p, a            // msb ElapseTime_t.startTime
+    idxm    p, a            // msb TimeoutElement.startTime
 
-    mov     a, _delayTime+0
+    mov     a, _timeout+0
     inc     p
-    idxm    p, a            // lsb ElapseTime_t.delay
+    idxm    p, a            // lsb TimeoutElement.timeout
 
-    mov     a, _delayTime+1
+    mov     a, _timeout+1
     inc     p
-    idxm    p, a            // msb ElapseTime_t.delay
+    idxm    p, a            // msb TimeoutElement.timeout
     ret
 __endasm;
 
-#undef _ptrDelayElement
-#undef _delayTime
+#undef _ptrTimeoutElement
+#undef _timeout
 }
 
 /*
- * @brief   Checks if previous set time has elapsed
+ * @brief   Checks if previous set timeout has expired
  *
- * @param1  ElapseTime element which stores the time parameters
- * @return  true if time is elapsed, false if not yet elapsed
+ * @param1  Timeout element which stores the timeout parameters
+ * @return  true if time is elapsed, false if not yet elapsed (if not set, returns true)
  */
-bool SYS_TIME_Is_Elapsed(ElapseTime_t *DelayElement) ASM_CORE
+bool SYS_TIME_Check_Timeout(Timeout_t *TimeoutElement) ASM_CORE
 {
-    DelayElement;
+    TimeoutElement;
 
-#define _ptrDelayElement    _OVERLAY_AREA // _SYS_TIME_Is_Elapsed_PARM_1
+#define _ptrTimeoutElement  _OVERLAY_AREA // _SYS_TIME_Check_Timeout_PARM_1
 #define _startTime          _OVERLAY_AREA+2
-#define _delayTime          _OVERLAY_AREA+4
+#define _timeout            _OVERLAY_AREA+4
 #define _tmp                _OVERLAY_AREA+6
 
 __asm
-    mov     a, _ptrDelayElement+0
+    mov     a, _ptrTimeoutElement+0
     mov     p, a
 
-    idxm    a, p            // lsb ElapseTime_t.startTime
+    idxm    a, p            // lsb TimeoutElement.startTime
     mov     _startTime+0, a
     inc     p
-    idxm    a, p            // msb ElapseTime_t.startTime
+    idxm    a, p            // msb TimeoutElement.startTime
     mov     _startTime+1, a
     inc     p
 
-    idxm    a, p            // lsb ElapseTime_t.delay
-    mov     _delayTime+0, a
+    idxm    a, p            // lsb TimeoutElement.timeout
+    mov     _timeout+0, a
     inc     p
-    idxm    a, p            // msb ElapseTime_t.delay
-    mov     _delayTime+1, a
+    idxm    a, p            // msb TimeoutElement.timeout
+    mov     _timeout+1, a
 
     disgint
     mov     a, _upTime+1
@@ -132,22 +132,55 @@ __asm
     xch     _tmp            // diff lsb to tmp, msb upTime to a
     subc    a, _startTime+1 // msb upTime - msb startTime - c
     xch     _tmp            // diff lsb to a, diff msb to tmp
-    sub     a, _delayTime+0 // diff lsb - delay lsb
+    sub     a, _timeout+0   // diff lsb - timeout lsb
     mov     a, _tmp
-    subc    a, _delayTime+1 // diff msb - delay msb - c
+    subc    a, _timeout+1   // diff msb - timeout msb - c
     t0sn.io f, c            // skip next if c == 0 (only 1 if diff < delay)
     ret     #0x00
 
     mov     a, #0x00
-    idxm    p, a            // clear msb delay
+    idxm    p, a            // clear msb timeout
     dec     p
-    idxm    p, a            // clear msb delay
+    idxm    p, a            // clear lsb timeout
     ret     #0x01
 __endasm;
 
-#undef _ptrDelayElement
+#undef _ptrTimeoutElement
 #undef _startTime
-#undef _delayTime
+#undef _timeout
+#undef _tmp
+}
+
+/*
+ * @brief   Checks if timeout has been set
+ *
+ * @param1  Timeout element which stores the timeout parameters
+ * @return  true if timeout was set, false if not set
+ */
+bool SYS_TIME_Is_Timeout_Set(Timeout_t *TimeoutElement) ASM_CORE
+{
+    TimeoutElement;
+
+#define _ptrTimeoutElement  _OVERLAY_AREA // _SYS_TIME_Is_Timeout_Set_PARM_1
+#define _tmp                _OVERLAY_AREA+2
+
+__asm
+    mov     a, _ptrTimeoutElement+0
+    add     a, #0x02
+    mov     p, a
+
+    idxm    a, p            // lsb TimeoutElement.timeout
+    mov     _tmp, a
+    inc     p
+    idxm    a, p            // msb TimeoutElement.timeout
+    and     _tmp, a
+    cneqsn  a, #0x00
+    ret     #0x00
+
+    ret     #0x01
+__endasm;
+
+#undef _ptrTimeoutElement
 }
 
 /*

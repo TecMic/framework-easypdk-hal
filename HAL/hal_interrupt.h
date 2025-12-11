@@ -29,6 +29,12 @@
 #define IT_PA0_Check_En_Interrupt()     (IT_Get_Active_Interrupts() & (uint8_t)INTRQ_PA0)
 #define IT_PA0_Clear_Interrupt()        INTRQ &= ~((uint8_t)INTRQ_PA0)
 
+#define IT_PB0_Enable_Interrupt()       INTEN |= (uint8_t)INTEN_PB0
+#define IT_PB0_Disable_Interrupt()      INTEN &= ~((uint8_t)INTEN_PB0)
+#define IT_PB0_Check_Interrupt()        (INTRQ & (uint8_t)INTRQ_PB0)
+#define IT_PB0_Check_En_Interrupt()     (IT_Get_Active_Interrupts() & (uint8_t)INTRQ_PB0)
+#define IT_PB0_Clear_Interrupt()        INTRQ &= ~((uint8_t)INTRQ_PB0)
+
 #define IT_Enable_Interrupts()          __engint()
 #define IT_Disable_Interrupts()         __disgint()
 

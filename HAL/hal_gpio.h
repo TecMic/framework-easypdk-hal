@@ -21,15 +21,15 @@ typedef enum {
 } GPIO_Pin_EdgeDetection_e;
 
 /* Initialize GPIO pins as inputs or outputs */
-#define GPIO_PA_Init_Output(pins)       PAC |= (uint8_t)pins;
-#define GPIO_PA_Init_Input(pins)        PAC &= ~(uint8_t)pins;
+#define GPIO_PA_Init_Output(pins)       PAC |= (uint8_t)pins
+#define GPIO_PA_Init_Input(pins)        PAC &= ~(uint8_t)pins
 
 /* !!!  PADIER is write only. Setting a single bit will clear the other bits
  *      -> All pins must be configured at the same time !!!
  *      - Enables digital input to read pin state
  *      - Enables wakeup capability
  */
-#define GPIO_PA_Enable_Digital_Input(pins)  PADIER = (uint8_t)pins;
+#define GPIO_PA_Enable_Digital_Input(pins)  PADIER = (uint8_t)pins
 
 #define GPIO_PA_Enable_PullUp(pins)     PAPH |= (uint8_t)pins
 #define GPIO_PA_Disable_PullUp(pins)    PAPH &= ~((uint8_t)pins)

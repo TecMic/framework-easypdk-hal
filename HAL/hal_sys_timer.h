@@ -21,8 +21,8 @@
  ***********************************************************/
 typedef struct {
     uint16_t startTime;
-    uint16_t delay;
-} ElapseTime_t;
+    uint16_t timeout;
+} Timeout_t;
 
 /***********************************************************
  * EXPORTED VARIABLES
@@ -67,8 +67,9 @@ extern volatile uint16_t upTime; // ms
  * FUNCTIONS
  ***********************************************************/
 void SYS_TIME_Init(void);
-void SYS_TIME_Set_Elapse_Time(ElapseTime_t *DelayElement, uint16_t delayTime);
-bool SYS_TIME_Is_Elapsed(ElapseTime_t *DelayElement);
+void SYS_TIME_Set_Timeout(Timeout_t *TimeoutElement, uint16_t timeout);
+bool SYS_TIME_Check_Timeout(Timeout_t *TimeoutElement);
+bool SYS_TIME_Is_Timeout_Set(Timeout_t *TimeoutElement);
 void Delay_ms(uint16_t delay);
 
 #endif // __HAL_SYS_TIMER_H__
