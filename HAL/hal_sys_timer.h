@@ -41,12 +41,12 @@ extern volatile uint16_t upTime; // ms
     #define SYS_TIME_Clear_Interrupt()      IT_TIM2_Clear_Interrupt()
     #define SYS_TIME_Tick_Handler() \
         __asm__( \
-            "t1sn.io    __intrq, #6 \n" \
-            "goto 00099$            \n" \
-            "set0.io    __intrq, #6 \n" \
-            "inc        _upTime+0   \n" \
-            "addc       _upTime+1   \n" \
-            "00099$:                \n" \
+            "t1sn.io    __intrq, #"_STR(INTRQ_TM2_BIT)" \n" \
+            "goto 00099$                                \n" \
+            "set0.io    __intrq, #"_STR(INTRQ_TM2_BIT)" \n" \
+            "inc        _upTime+0                       \n" \
+            "addc       _upTime+1                       \n" \
+            "00099$:                                    \n" \
         )
 #else
     #define SYS_TIME_Check_Interrupt()      IT_TIM16_Check_Interrupt()
@@ -54,12 +54,12 @@ extern volatile uint16_t upTime; // ms
     #define SYS_TIME_Clear_Interrupt()      IT_TIM16_Clear_Interrupt()
     #define SYS_TIME_Tick_Handler() \
         __asm__( \
-            "t1sn.io    __intrq, #2 \n" \
-            "goto 00099$            \n" \
-            "set0.io    __intrq, #2 \n" \
-            "inc        _upTime+0   \n" \
-            "addc       _upTime+1   \n" \
-            "00099$:                \n" \
+            "t1sn.io    __intrq, #"_STR(INTRQ_T16_BIT)" \n" \
+            "goto 00099$                                \n" \
+            "set0.io    __intrq, #"_STR(INTRQ_T16_BIT)" \n" \
+            "inc        _upTime+0                       \n" \
+            "addc       _upTime+1                       \n" \
+            "00099$:                                    \n" \
         )
 #endif
 
