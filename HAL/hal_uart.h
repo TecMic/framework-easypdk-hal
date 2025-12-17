@@ -6,7 +6,7 @@ Usage:
 
 Recommended clock speeds:
 115200 baud:
-- RX and TX: 16 MHz (5 V)
+- RX and TX: 16 MHz (5 V - not officially supported)
 - RX or TX: 8 MHz
 
 57600 baud:
@@ -14,15 +14,15 @@ Recommended clock speeds:
 - RX or TX: 4 MHz
 
 38400 baud:
+- RX and TX: 8 MHz
+- RX or TX: 4 MHz
+
+19200 baud:
 - RX and TX: 4 MHz
 - RX or TX: 2 MHz
 
-19200 baud:
-- RX and TX: 2 MHz
-- RX or TX: 1 MHz
-
 9600 baud:
-- RX and TX: 1 MHz
+- RX and TX: 2 MHz
 - RX or TX: 1 MHz
 
 Use global defines in platformio.ini:
@@ -44,12 +44,12 @@ Use global defines in platformio.ini:
 /***********************************************************
  * DEFINES
  ***********************************************************/
-#ifndef TX
-    #define TX          7
+#if !defined(UART_TX_PA) && !defined(UART_TX_PB)
+    #define UART_TX_PA  7
 #endif
 
-#ifndef RX
-    #define RX          6
+#if !defined(UART_RX_PA) || !defined(UART_RX_PB)
+    #define UART_RX_PA  0
 #endif
 
 #ifndef UART_BAUD
@@ -69,10 +69,24 @@ Use global defines in platformio.ini:
     #define UART_USE_TX     1
 #endif
 
+/* End of user defines */
 
-#define UART_INTERRUPT_BIT_PA   INTRQ_PA0_BIT
-#define UART_INTERRUPT_BIT_RX   INTRQ_TM2_BIT
-#define UART_INTERRUPT_BIT_TX   INTRQ_TM3_BIT
+#if defined(UART_TX_PA)
+    #define UART_TX_PIN_BIT         UART_TX_PA
+#else
+    #define UART_TX_PIN_BIT         UART_TX_PB
+#endif
+
+#if defined(UART_RX_PA)
+    #define UART_PIN_BIT_RX         UART_RX_PA
+    #define UART_INTERRUPT_BIT_PIN  INTRQ_PA0_BIT
+#else
+    #define UART_PIN_BIT_TX         UART_RX_PB
+    #define UART_INTERRUPT_BIT_PIN  INTRQ_PB0_BIT
+#endif
+
+#define UART_INTERRUPT_BIT_RX       INTRQ_TM2_BIT
+#define UART_INTERRUPT_BIT_TX       INTRQ_TM3_BIT
 
 /***********************************************************
  * TYPEDEFS
@@ -87,13 +101,12 @@ Use global defines in platformio.ini:
 /***********************************************************
  * MAKROS
  ***********************************************************/
-
-#ifdef UART_USE_RX_PA0_IT
+#if (UART_PIN_BIT_RX == 0)
 #define UART_Interrupt_RX_Handler() \
     __asm__( \
         "t0sn.io    __intrq, #"_STR(UART_INTERRUPT_BIT_RX)" \n" \
         "call       _UART_Handle_Interrupt_RX               \n" \
-        "t0sn.io    __inten, #"_STR(UART_INTERRUPT_BIT_PA)" \n" \
+        "t0sn.io    __inten, #"_STR(UART_INTERRUPT_BIT_PIN)"\n" \
         "call       _UART_Handle_Interrupt_RX_Pin           \n" \
     )
 #else

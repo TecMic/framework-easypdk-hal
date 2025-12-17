@@ -85,11 +85,33 @@
 // Ringbuffer mask
 #define UART_DATA_BUFFER_MASK   (UART_DATA_BUFFER_SIZE - 1)
 
-#define UART_PIN_TX_BIT         TX
-#define UART_PIN_RX_BIT         RX
-
-#ifdef UART_USE_RX_PA0_IT
+// Pin defines
+#if (UART_PIN_BIT_RX == 0)
     #define UART_RX_PIN_IT
+#endif
+
+#if defined(UART_TX_PA)
+    #define _UART_TX_Px     __pa
+    #define _UART_TX_PxC    __pac
+    #define _UART_TX_PxPH   __paph
+    #define _UART_TX_PxDIER __padier
+#else
+    #define _UART_TX_Px     __pb
+    #define _UART_TX_PxC    __pbc
+    #define _UART_TX_PxPH   __pbph
+    #define _UART_TX_PxDIER __pbdier
+#endif
+
+#if defined(UART_RX_PA)
+    #define _UART_RX_Px     __pa
+    #define _UART_RX_PxC    __pac
+    #define _UART_RX_PxPH   __paph
+    #define _UART_RX_PxDIER __padier
+#else
+    #define _UART_RX_Px     __pb
+    #define _UART_RX_PxC    __pbc
+    #define _UART_RX_PxPH   __pbph
+    #define _UART_RX_PxDIER __pbdier
 #endif
 
 // RX States
@@ -169,12 +191,12 @@ __asm
     mov     _txHandler_bitCnt, a
 
 #ifdef UART_TX_TYPE_OD
-    set0.io __pac, #UART_PIN_TX_BIT     // input
-    set0.io __pa, #UART_PIN_TX_BIT      // output low
-    set1.io __paph, #UART_PIN_TX_BIT    // pull up
+    set0.io _UART_TX_PxC, #UART_TX_PIN_BIT  // input
+    set0.io _UART_TX_Px, #UART_TX_PIN_BIT   // output low
+    set1.io _UART_TX_PxPH, #UART_TX_PIN_BIT // pull up
 #else
-    set1.io __pac, #UART_PIN_TX_BIT     // output
-    set1.io __pa, #UART_PIN_TX_BIT      // output high
+    set1.io _UART_TX_PxC, #UART_TX_PIN_BIT  // output
+    set1.io _UART_TX_Px, #UART_TX_PIN_BIT   // output high
 #endif
 
     // init timer 3
@@ -215,10 +237,10 @@ __asm
     mov.io  __tm3ct, a
 
 #ifdef UART_TX_TYPE_OD
-    set1.io __pac, #UART_PIN_TX_BIT // pin as output/low
-    not     _txHandler_currentByte  // invert byte to correct for low = set1.io __pac
+    set1.io _UART_TX_PxC, #UART_TX_PIN_BIT  // pin as output/low
+    not     _txHandler_currentByte          // invert byte to correct for low = set1.io __pac
 #else
-    set0.io __pa, #UART_PIN_TX_BIT  // pin low
+    set0.io _UART_TX_Px, #UART_TX_PIN_BIT   // pin low
 #endif
     ret
 __endasm;
@@ -235,9 +257,9 @@ __asm
     mov     _txHandler_bitCnt, a
 
 #ifdef UART_TX_TYPE_OD
-    set0.io __pac, #UART_PIN_TX_BIT // input/high
+    set0.io _UART_TX_PxC, #UART_TX_PIN_BIT // input/high
 #else
-    set1.io __pa, #UART_PIN_TX_BIT  // high
+    set1.io _UART_TX_Px, #UART_TX_PIN_BIT  // high
 #endif
 
     mov     a, #0x00
@@ -263,9 +285,9 @@ __asm
     // bitCnt > 0
     sr      _txHandler_currentByte
 #ifdef UART_TX_TYPE_OD
-    swapc.io    __pac, #UART_PIN_TX_BIT // input (0) if bit value is 1 - current byte has been inverted
+    swapc.io    _UART_TX_PxC, #UART_TX_PIN_BIT // input (0) if bit value is 1 - current byte has been inverted
 #else
-    swapc.io    __pa, #UART_PIN_TX_BIT  // carry to pin
+    swapc.io    _UART_TX_Px, #UART_TX_PIN_BIT  // carry to pin
 #endif
     ret
 __endasm;
@@ -373,8 +395,8 @@ __asm
     mov     a, #UART_STATE_RX_SEARCH_START_BIT
     mov     _rxHandler_state, a
 
-    set0.io __pac, #UART_PIN_RX_BIT     // input
-    set1.io __padier, #UART_PIN_RX_BIT  // enable digital input
+    set0.io _UART_RX_PxC, #UART_PIN_BIT_RX      // input
+    set1.io _UART_RX_PxDIER, #UART_PIN_BIT_RX   // enable digital input
 
     // init timer
 #ifdef UART_RX_PIN_IT
@@ -385,8 +407,8 @@ __asm
     mov     a, #(TIM2_3_CLK_SRC_DISABLE | TIM2_3_MODE_PERIOD) // config timer but keep it disabled
     mov.io  __tm2c, a
 
-    set0.io __intrq, #UART_INTERRUPT_BIT_PA // clear pa0 interrupt
-    set1.io __inten, #UART_INTERRUPT_BIT_PA // enable pa0 interrupt
+    set0.io __intrq, #UART_INTERRUPT_BIT_PIN // clear pa0 interrupt
+    set1.io __inten, #UART_INTERRUPT_BIT_PIN // enable pa0 interrupt
 #else
     mov     a, #(UART_TIM_PRESCALER | UART_TIM_SCALER)
     mov.io  __tm2s, a
@@ -411,8 +433,8 @@ __asm
     // bitCnt == 0
 #ifdef UART_RX_PIN_IT
     set0.io __tm2c, #5  //disable timer2
-    set0.io __intrq, #UART_INTERRUPT_BIT_PA // clear PA0 interrupt
-    set1.io __inten, #UART_INTERRUPT_BIT_PA // enable interrupt PA0
+    set0.io __intrq, #UART_INTERRUPT_BIT_PIN // clear PA0 interrupt
+    set1.io __inten, #UART_INTERRUPT_BIT_PIN // enable interrupt PA0
 #else
     // change timer duration to search for new start bit
     mov     a, #UART_TIM_BOUND_SEARCH_START
@@ -430,7 +452,7 @@ __asm
 
 00001$:
     // bitCnt > 0
-    swapc.io    __pa, #UART_PIN_RX_BIT  // read pin
+    swapc.io    _UART_RX_Px, #UART_PIN_BIT_RX  // read pin
     src         _rxHandler_currentByte
 
     // check if last byte received
@@ -460,13 +482,13 @@ __asm
     goto    _UART_Handle_Interrupt_RX_Receiving // state is UART_STATE_RX_RECEIVING
 
 #ifdef UART_RX_PIN_IT
-    set0.io __inten, #UART_INTERRUPT_BIT_PA // disable GPIO interrupt
-    set1.io __tm2c, #5                      // enable timer 2 with IHRC
+    set0.io __inten, #UART_INTERRUPT_BIT_PIN    // disable GPIO interrupt
+    set1.io __tm2c, #5                          // enable timer 2 with IHRC
 
     mov     a, #0x00
 #else
     // check if pin is low (start condition)
-    t0sn.io __pa, #UART_PIN_RX_BIT
+    t0sn.io _UART_RX_Px, #UART_PIN_BIT_RX
     ret // return if pin is high
 
     // start condition -> change timer duration to baud rate
@@ -495,7 +517,7 @@ __endasm;
 void UART_Handle_Interrupt_RX_Pin(void) ASM_CORE
 {
 __asm
-    t1sn.io __intrq, #UART_INTERRUPT_BIT_PA
+    t1sn.io __intrq, #UART_INTERRUPT_BIT_PIN
     ret
 
     goto    _UART_Handle_Interrupt_RX

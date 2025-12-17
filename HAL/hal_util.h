@@ -29,6 +29,8 @@
     #define INTERRUPT_FUNCTION_ASM(a)   INTERRUPT_FUNCTION(a) ASM_CORE
 #endif
 
+#define BIT(bit)   (1 << bit)
+
 /***********************************************************
  * TYPEDEFS
  ***********************************************************/
