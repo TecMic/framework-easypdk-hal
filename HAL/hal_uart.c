@@ -165,10 +165,10 @@ typedef struct {
 /*
  * ======== LOCAL VARIABLES ========
  */
-#if UART_USE_RX
+#ifdef USE_UART_RX
 volatile UartModuleHandler_t rxHandler;
 #endif
-#if UART_USE_TX
+#ifdef USE_UART_TX
 volatile UartModuleHandler_t txHandler;
 #endif
 
@@ -182,7 +182,7 @@ volatile UartModuleHandler_t txHandler;
  */
 
 
-#if UART_USE_TX
+#ifdef USE_UART_TX
 void UART_Init_TX(void) ASM_CORE
 {
 __asm
@@ -388,7 +388,7 @@ __endasm;
 }
 #endif
 
-#if UART_USE_RX
+#ifdef USE_UART_RX
 void UART_Init_RX(void) ASM_CORE
 {
 __asm

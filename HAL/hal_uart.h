@@ -2,8 +2,6 @@
 #define __HAL_UART_H__
 
 /*
-Usage:
-
 Recommended clock speeds:
 115200 baud:
 - RX and TX: 16 MHz (5 V - not officially supported)
@@ -24,14 +22,6 @@ Recommended clock speeds:
 9600 baud:
 - RX and TX: 2 MHz
 - RX or TX: 1 MHz
-
-Use global defines in platformio.ini:
-
-- Configure tx pin as open-drain (includes pull up on rx pin)
-    #define UART_TX_TYPE_OD
-
-- Use pin interrupt for RX. Only available on PA0
-    #define UART_USE_RX_PA0_IT
 */
 
 /***********************************************************
@@ -41,6 +31,8 @@ Use global defines in platformio.ini:
 #include <stdbool.h>
 #include <pdk/device.h>
 
+#include "hal_config.h"
+
 /***********************************************************
  * DEFINES
  ***********************************************************/
@@ -48,7 +40,7 @@ Use global defines in platformio.ini:
     #define UART_TX_PA  7
 #endif
 
-#if !defined(UART_RX_PA) || !defined(UART_RX_PB)
+#if !defined(UART_RX_PA) && !defined(UART_RX_PB)
     #define UART_RX_PA  0
 #endif
 
@@ -61,13 +53,6 @@ Use global defines in platformio.ini:
     #define UART_DATA_BUFFER_SIZE   8
 #endif
 
-
-#ifndef UART_USE_RX
-    #define UART_USE_RX     1
-#endif
-#ifndef UART_USE_TX
-    #define UART_USE_TX     1
-#endif
 
 /* End of user defines */
 
