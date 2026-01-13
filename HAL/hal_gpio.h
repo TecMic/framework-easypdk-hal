@@ -66,8 +66,8 @@
 /* Read one or multiple pin states */
 #define GPIO_PA_Read_All_Pins()         PA
 #define GPIO_PB_Read_All_Pins()         PB
-#define GPIO_PA_Read_Pins(pins)         (PA & (uint8_t)pins)
-#define GPIO_PB_Read_Pins(pins)         (PB & (uint8_t)pins)
+#define GPIO_PA_Read_Pin(pin)           (PA & (uint8_t)BIT(pin))
+#define GPIO_PB_Read_Pin(pin)           (PB & (uint8_t)BIT(pin))
 
 /* Open-Drain Pin */
 #define GPIO_PA_Init_OD(pin)    do {                            \
