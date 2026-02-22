@@ -30,10 +30,7 @@
 #if defined(I2C_SDA_PA)
     #define PIN_SDA             I2C_SDA_PA
 
-    #define I2C_Init_SDA()      do {                                        \
-                                    GPIO_PA_Init_OD(PIN_SDA);               \
-                                    GPIO_PA_Enable_Digital_Input(PIN_SDA);  \
-                                } while (0)
+    #define I2C_Init_SDA()      GPIO_PA_Init_OD(PIN_SDA)
 
     #define I2C_Release_SDA()   GPIO_PA_OD_HIGH(PIN_SDA)
     #define I2C_Drive_Low_SDA() GPIO_PA_OD_LOW(PIN_SDA)
@@ -44,10 +41,7 @@
 #else
     #define PIN_SDA             I2C_SDA_PB
 
-    #define I2C_Init_SDA()      do {                                        \
-                                    GPIO_PB_Init_OD(PIN_SDA);               \
-                                    GPIO_PB_Enable_Digital_Input(PIN_SDA);  \
-                                } while (0)
+    #define I2C_Init_SDA()      GPIO_PB_Init_OD(PIN_SDA)
 
     #define I2C_Release_SDA()   GPIO_PB_OD_HIGH(PIN_SDA)
     #define I2C_Drive_Low_SDA() GPIO_PB_OD_LOW(PIN_SDA)

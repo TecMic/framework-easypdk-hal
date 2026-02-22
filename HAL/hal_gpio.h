@@ -28,14 +28,13 @@
 #define GPIO_PA_Init_Input(pin)     PAC &= ~(uint8_t)BIT(pin)
 #define GPIO_PB_Init_Input(pin)     PBC &= ~(uint8_t)BIT(pin)
 
-/* Enable digital input for a pin to read input state and enable wakeup capability 
- * PADIER is write only. Enable/disable for single pin only (sdcc will compile it to single bit set/clear)
+/* !!!  PADIER is write only. Setting a single bit will clear the other bits
+ *      -> All pins must be configured at the same time !!!
+ *      - Pin bit to 1 Enables digital input to read pin state
+ *      - Enables wakeup capability
  */
-#define GPIO_PA_Enable_Digital_Input(pin)  PADIER |= (uint8_t)BIT(pin)
-#define GPIO_PB_Enable_Digital_Input(pin)  PBDIER |= (uint8_t)BIT(pin)
-
-#define GPIO_PA_Disable_Digital_Input(pin) PADIER &= ~((uint8_t)BIT(pin))
-#define GPIO_PB_Disable_Digital_Input(pin) PBDIER &= ~((uint8_t)BIT(pin))
+#define GPIO_PA_Enable_Digital_Input(pins)  PADIER = (uint8_t)pins
+#define GPIO_PB_Enable_Digital_Input(pins)  PBDIER = (uint8_t)pins
 
 /* Enable Pull-Up */
 #define GPIO_PA_Enable_PullUp(pins)     PAPH |= (uint8_t)BIT(pin)

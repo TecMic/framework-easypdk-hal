@@ -58,6 +58,12 @@ void main(void)
     UART_Init_TX();
     UART_Init_RX();
 
+#ifdef UART_RX_PA
+    GPIO_PA_Enable_Digital_Input(BIT(UART_RX_PA));
+#else
+    GPIO_PB_Enable_Digital_Input(BIT(UART_RX_PB));
+#endif
+
     IT_Enable_Interrupts();
 
     println("Hello World!");

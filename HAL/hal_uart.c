@@ -396,7 +396,6 @@ __asm
     mov     _rxHandler_state, a
 
     set0.io _UART_RX_PxC, #UART_PIN_BIT_RX      // input
-    set1.io _UART_RX_PxDIER, #UART_PIN_BIT_RX   // enable digital input
 
     // init timer
 #ifdef UART_RX_PIN_IT
