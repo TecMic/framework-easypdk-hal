@@ -37,11 +37,11 @@
 #define GPIO_PB_Enable_Digital_Input(pins)  PBDIER = (uint8_t)pins
 
 /* Enable Pull-Up */
-#define GPIO_PA_Enable_PullUp(pins)     PAPH |= (uint8_t)BIT(pin)
-#define GPIO_PB_Enable_PullUp(pins)     PBPH |= (uint8_t)BIT(pin)
+#define GPIO_PA_Enable_PullUp(pin)      PAPH |= (uint8_t)BIT(pin)
+#define GPIO_PB_Enable_PullUp(pin)      PBPH |= (uint8_t)BIT(pin)
 
-#define GPIO_PA_Disable_PullUp(pins)    PAPH &= ~((uint8_t)BIT(pin))
-#define GPIO_PB_Disable_PullUp(pins)    PBPH &= ~((uint8_t)BIT(pin))
+#define GPIO_PA_Disable_PullUp(pin)     PAPH &= ~((uint8_t)BIT(pin))
+#define GPIO_PB_Disable_PullUp(pin)     PBPH &= ~((uint8_t)BIT(pin))
 
 /* Set GPIO outputs */
 #define GPIO_PA_Write_All_Pins(val)     PA = (uint8_t)val
@@ -54,11 +54,11 @@
 #define GPIO_PB_Write_High(pin)         PB |= (uint8_t)BIT(pin)
 
 #define GPIO_PA_Write_Reverse(pin)      __asm__( \
-                                            "mov        a, #"_STR(pin)" \n" \
+                                            "mov        a, #"_STR(BIT(pin))" \n" \
                                             "xor.io     __pa, a         \n" \
                                         )
 #define GPIO_PB_Write_Reverse(pin)      __asm__( \
-                                            "mov        a, #"_STR(pin)" \n" \
+                                            "mov        a, #"_STR(BIT(pin))" \n" \
                                             "xor.io     __pb, a         \n" \
                                         )
 

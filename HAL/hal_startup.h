@@ -68,8 +68,8 @@
         "mov    a, #0x00        \n" \
         "mov.io __inten, a      \n" \
         "mov.io __misc, a       \n" \
-        "mov.io __pa, a         \n" \
-        "mov.io __pb, a         \n" \
+        "mov.io __pac, a        \n" \
+        "mov.io __pbc, a        \n" \
         "mov.io __eoscr, a      \n" \
                                     \
         "mov.io __tm2c, a       \n" \
@@ -82,11 +82,11 @@
                                     \
         "mov.io __intrq, a      \n" \
         "mov.io __integs, a     \n" \
+        "mov.io __pa, a         \n" \
+        "mov.io __pb, a         \n" \
         "mov.io __padier, a     \n" \
         "mov.io __pbdier, a     \n" \
-        "mov.io __pac, a        \n" \
         "mov.io __paph, a       \n" \
-        "mov.io __pbc, a        \n" \
         "mov.io __pbph, a       \n" \
         "mov.io __gpcs, a       \n" \
     )
