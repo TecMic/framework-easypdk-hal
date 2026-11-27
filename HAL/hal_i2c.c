@@ -253,7 +253,7 @@ _i:
     mov     a, #0x08
     mov     _i, a
 
-000001$:
+00001$:
     mov     a, #0x00
     sl      _data   // msb to carry
     slc     a       // carry to bit 0 of a
@@ -261,7 +261,7 @@ _i:
     call    _I2C_Write_Bit
 
     dzsn    _i
-    goto    000001$
+    goto    00001$
 
     goto    _I2C_Read_Bit   // will return ack
 __endasm;
@@ -318,7 +318,7 @@ _data:
     slc     _data       // pin value to lsb of ret value
 
     dzsn    _i
-    goto    000001$
+    goto    00001$
 
     // a is zero at this point
     cneqsn  a, _ack     // if ack == 1 send 0
@@ -351,7 +351,7 @@ uint8_t I2C_Read_Byte(uint8_t ack)
 #endif
 
 /* High-level convenience: writes 'len' bytes to device (7-bit address).
-   device_addr: 7-bit address (0..127). Returns 0 on success, non-zero on failure. */
+   device_addr: 7-bit address (0..127). Returns true on success, false on failure. */
 #ifndef HAL_C_FUNCTIONS
 bool I2C_Write(uint8_t address, const uint8_t *buf, uint8_t len) ASM_CORE
 {
@@ -367,7 +367,7 @@ __asm
 
     call    _I2C_Write_Byte // write parameter is overlayed with address
 
-    cneqsn  a, #0x00        // return -1 if a == 1 (nack)
+    cneqsn  a, #0x00        // return false if a == 1 (nack)
     goto    00002$
 
 00001$:
@@ -382,7 +382,7 @@ __asm
     mov     _I2C_Write_Byte_PARM_1, a
     call    _I2C_Write_Byte
 
-    ceqsn   a, #0x00    // return -1 if a == 1 (nack)
+    ceqsn   a, #0x00    // return false if a == 1 (nack)
     goto    00001$
 
     inc     _buf
@@ -423,7 +423,7 @@ bool I2C_Write(uint8_t address, const uint8_t *buf, uint8_t len)
 
 
 /* High-level convenience: read 'len' bytes from device into buf (7-bit address).
-   Returns 0 on success, non-zero on failure. */
+   Returns true on success, false on failure. */
 #ifndef HAL_C_FUNCTIONS
 bool I2C_Read(uint8_t address, uint8_t *buf, uint8_t len) ASM_CORE
 {
@@ -440,7 +440,7 @@ __asm
 
     call    _I2C_Write_Byte // write parameter is overlayed with address
 
-    cneqsn  a, #0x00        // return -1 if a == 1 (nack)
+    cneqsn  a, #0x00        // return false if a == 1 (nack)
     goto    00002$
 
 00001$:
@@ -449,7 +449,7 @@ __asm
 
 00002$:
     mov     a, #0x01
-    cneqsn  a, _I2C_Read_PARM_3+0   // if len != 1 ? 1 = ack : 0 = nack
+    cneqsn  a, _len   // if len != 1 ? 1 = ack : 0 = nack
     mov     a, #0x00
 
     mov     _I2C_Read_Byte_PARM_1, a
